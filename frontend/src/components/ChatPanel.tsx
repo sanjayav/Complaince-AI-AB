@@ -56,7 +56,7 @@ const ChatPanel = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }
     if (!isOpen) return null;
 
     return (
-        <div style={{
+        <div className="chat-panel-mobile" style={{
             position: 'fixed', bottom: '24px', right: '24px', width: '420px', height: '600px',
             background: 'rgba(255,255,255,0.92)', backdropFilter: 'blur(32px)', WebkitBackdropFilter: 'blur(32px)',
             border: '1px solid rgba(255,255,255,0.6)', borderRadius: '24px',

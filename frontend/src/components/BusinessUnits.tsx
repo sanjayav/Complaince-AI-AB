@@ -11,7 +11,7 @@ const BusinessUnits = ({ onSelect }: { onSelect: (bu: BusinessUnit) => void }) =
                 </p>
             </header>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(360px, 1fr))', gap: '2rem' }}>
+            <div className="bu-card-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(360px, 100%), 1fr))', gap: '2rem' }}>
                 {businessUnits.map((bu) => (
                     <div key={bu.id} className="glass-panel" style={{ padding: '2.5rem', display: 'flex', flexDirection: 'column', cursor: 'pointer', transition: 'all 0.3s' }} onClick={() => onSelect(bu)}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.5rem' }}>

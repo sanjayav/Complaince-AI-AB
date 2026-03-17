@@ -4,18 +4,20 @@ import LiveFeed from './LiveFeed';
 const Dashboard = () => {
     return (
         <div className="content-area animate-slide-up">
-            <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <div>
-                    <h1 style={{ fontSize: '2.5rem', marginBottom: '0.5rem', color: 'var(--accent-black)', letterSpacing: '-0.02em' }}>Group Compliance Intelligence</h1>
-                    <p style={{ color: 'var(--text-secondary)', fontSize: '1.1rem', maxWidth: '700px' }}>
-                        Aeiforo Compliance AI helps diversified industrial groups convert regulatory change into site-level actions, supplier evidence collection, and audit-ready workflows.
-                    </p>
-                </div>
-                <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-                    <button className="btn btn-secondary" style={{ borderRadius: '50%', padding: '12px', width: '48px', height: '48px' }}>
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" /><path d="M13.73 21a2 2 0 0 1-3.46 0" /></svg>
-                    </button>
-                    <button className="btn btn-primary">+ Create Audit Pack</button>
+            <header>
+                <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'flex-start', gap: '1rem' }}>
+                    <div style={{ flex: 1, minWidth: '250px' }}>
+                        <h1 style={{ fontSize: '2.5rem', marginBottom: '0.5rem', color: 'var(--accent-black)', letterSpacing: '-0.02em' }}>Group Compliance Intelligence</h1>
+                        <p style={{ color: 'var(--text-secondary)', fontSize: '1.1rem', maxWidth: '700px' }}>
+                            Aeiforo Compliance AI helps diversified industrial groups convert regulatory change into site-level actions, supplier evidence collection, and audit-ready workflows.
+                        </p>
+                    </div>
+                    <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', flexShrink: 0 }}>
+                        <button className="btn btn-secondary" style={{ borderRadius: '50%', padding: '12px', width: '48px', height: '48px' }}>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" /><path d="M13.73 21a2 2 0 0 1-3.46 0" /></svg>
+                        </button>
+                        <button className="btn btn-primary">+ Create Audit Pack</button>
+                    </div>
                 </div>
             </header>
 
@@ -36,7 +38,7 @@ const Dashboard = () => {
                 <span style={{ background: 'var(--accent-black)', color: 'white', padding: '6px 14px', borderRadius: '100px' }}>Audit-Ready Output</span>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr 1fr', gap: '1.5rem' }}>
+            <div className="dashboard-top-grid" style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr 1fr', gap: '1.5rem' }}>
                 {/* Dark Card */}
                 <div className="glass-panel-dark" style={{ padding: '2rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                     <div>
@@ -99,7 +101,7 @@ const Dashboard = () => {
 
             <div>
                 <h2 style={{ fontSize: '1.5rem', marginBottom: '1.5rem' }}>Business Units Monitoring</h2>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.5rem' }}>
+                <div className="bu-card-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.5rem' }}>
                     {businessUnits.map((bu) => (
                         <div key={bu.id} className="glass-panel" style={{ padding: '1.5rem', position: 'relative', overflow: 'hidden' }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>

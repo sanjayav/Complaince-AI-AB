@@ -35,7 +35,7 @@ const Login = ({ onLogin }: { onLogin: (email: string) => void }) => {
             <div style={{ position: 'absolute', top: '-120px', right: '-80px', width: '400px', height: '400px', borderRadius: '50%', background: 'rgba(15,23,42,0.04)', filter: 'blur(60px)' }} />
             <div style={{ position: 'absolute', bottom: '-100px', left: '-60px', width: '350px', height: '350px', borderRadius: '50%', background: 'rgba(16,185,129,0.06)', filter: 'blur(60px)' }} />
 
-            <div style={{
+            <div className="login-card" style={{
                 display: 'flex',
                 width: '940px',
                 maxWidth: '95vw',
@@ -49,7 +49,7 @@ const Login = ({ onLogin }: { onLogin: (email: string) => void }) => {
                 boxShadow: '0 24px 48px -12px rgba(0,0,0,0.15)',
             }}>
                 {/* Left branding panel */}
-                <div style={{
+                <div className="login-branding" style={{
                     flex: 1,
                     background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
                     padding: '3.5rem',
@@ -104,7 +104,7 @@ const Login = ({ onLogin }: { onLogin: (email: string) => void }) => {
                 </div>
 
                 {/* Right login form */}
-                <div style={{
+                <div className="login-form-panel" style={{
                     flex: 1,
                     padding: '3.5rem',
                     display: 'flex',
@@ -231,6 +231,27 @@ const Login = ({ onLogin }: { onLogin: (email: string) => void }) => {
             <style>{`
                 @keyframes spin {
                     to { transform: rotate(360deg); }
+                }
+                @media (max-width: 768px) {
+                    .login-card {
+                        flex-direction: column !important;
+                        width: 100% !important;
+                        max-width: 100vw !important;
+                        min-height: 100vh !important;
+                        border-radius: 0 !important;
+                        border: none !important;
+                        box-shadow: none !important;
+                    }
+                    .login-branding {
+                        padding: 2rem 1.5rem !important;
+                        min-height: auto !important;
+                    }
+                    .login-branding h1 {
+                        font-size: 1.5rem !important;
+                    }
+                    .login-form-panel {
+                        padding: 2rem 1.5rem !important;
+                    }
                 }
             `}</style>
         </div>

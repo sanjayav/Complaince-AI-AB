@@ -7,21 +7,23 @@ const EntityDetail = ({ entity, onBack }: { entity: BusinessUnit; onBack: () => 
 
     return (
         <div className="content-area animate-slide-up">
-            <header style={{ marginBottom: '2.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
-                    <button className="btn btn-secondary" style={{ padding: '16px', borderRadius: '50%', width: '56px', height: '56px', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={onBack}>
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 12H5M12 19l-7-7 7-7" /></svg>
-                    </button>
-                    <div>
-                        <h1 style={{ fontSize: '2.4rem', marginBottom: '0.25rem', color: 'var(--accent-black)' }}>{entity.name}</h1>
-                        <p style={{ color: 'var(--text-secondary)', margin: 0, fontSize: '1.1rem' }}>{entity.sector}</p>
+            <header style={{ marginBottom: '2.5rem' }}>
+                <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: '1rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                        <button className="btn btn-secondary" style={{ padding: '12px', borderRadius: '50%', width: '44px', height: '44px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }} onClick={onBack}>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 12H5M12 19l-7-7 7-7" /></svg>
+                        </button>
+                        <div>
+                            <h1 style={{ fontSize: '2.4rem', marginBottom: '0.25rem', color: 'var(--accent-black)' }}>{entity.name}</h1>
+                            <p style={{ color: 'var(--text-secondary)', margin: 0, fontSize: '1.1rem' }}>{entity.sector}</p>
+                        </div>
                     </div>
-                </div>
-                <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
-                    <span className={`badge ${entity.status === 'Compliant' ? 'badge-success' : entity.status === 'At Risk' ? 'badge-warning' : 'badge-danger'}`} style={{ fontSize: '1rem', padding: '10px 20px' }}>
-                        {entity.status} (Score: {entity.score})
-                    </span>
-                    <button className="btn btn-primary" style={{ padding: '14px 28px', fontSize: '1rem' }}>Generate Proof Pack</button>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', alignItems: 'center' }}>
+                        <span className={`badge ${entity.status === 'Compliant' ? 'badge-success' : entity.status === 'At Risk' ? 'badge-warning' : 'badge-danger'}`} style={{ fontSize: '1rem', padding: '10px 20px' }}>
+                            {entity.status} (Score: {entity.score})
+                        </span>
+                        <button className="btn btn-primary" style={{ padding: '14px 28px', fontSize: '1rem' }}>Generate Proof Pack</button>
+                    </div>
                 </div>
             </header>
 
@@ -91,7 +93,7 @@ const EntityDetail = ({ entity, onBack }: { entity: BusinessUnit; onBack: () => 
                         <p style={{ fontSize: '1.1rem', color: 'var(--text-secondary)', marginBottom: '3rem' }}>
                             Sends questionnaires and tracks missing evidence systematically across suppliers.
                         </p>
-                        <div style={{ display: 'flex', gap: '1.5rem' }}>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
                             <button className="btn btn-primary" style={{ padding: '16px 32px', fontSize: '1.1rem' }}>Automate Outreach</button>
                             <button className="btn btn-secondary" style={{ padding: '16px 32px', fontSize: '1.1rem' }}>Review Pending Requests</button>
                         </div>
