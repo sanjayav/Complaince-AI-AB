@@ -252,7 +252,11 @@ h6 {
   gap: 2rem;
 }
 
-/* Mobile sidebar overlay */
+/* Mobile sidebar wrapper + overlay: hidden on desktop */
+.sidebar-mobile-wrap {
+  display: none;
+}
+
 .sidebar-overlay {
   display: none;
 }
