@@ -1,0 +1,17 @@
+ESRS Aluminium – Selected Clauses (v1.2)
+
+[ESRS E1-5 para 23] Scope 3 category 1 – Purchased goods (Aluminium)
+Undertakings using primary or recycled aluminium in products SHALL disclose Scope 3 category 1 (Purchased goods and services) GHG emissions. Disclosures SHALL include methodology for supplier-specific emission factors, recycled content share, and assurance over data quality.
+
+[ESRS E2-6 para 12] Resource use and circularity (Aluminium content)
+Undertakings SHALL disclose mass of aluminium input by source (primary vs recycled), scrap recovery rate, and measures to increase closed-loop recycling within their value chain.
+
+[ESRS E1-6 para 30] Transition plan targets for hard-to-abate materials
+Transition plans SHALL include measurable targets to reduce embodied emissions of aluminium, including supplier engagement, low-carbon smelting procurement (renewable electricity), and design-for-recycling commitments.
+
+[ESRS E1 AR 16] Supplier data and verification
+When supplier-specific factors are used for aluminium, undertakings SHOULD disclose verification approach, frequency, and coverage, including third-party assurance or chain-of-custody certifications where applicable.
+
+[ESRS E5-3 para 18] Design and material efficiency
+Undertakings SHALL disclose product design measures that reduce aluminium mass, improve repairability, and facilitate material separation at end-of-life.
+

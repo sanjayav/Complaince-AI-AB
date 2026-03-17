@@ -1,0 +1,17 @@
+Company Aluminium Procurement & Circularity Policy (Sample)
+
+Scope 3 Purchased Goods – Aluminium
+We estimate Scope 3 category 1 emissions for aluminium using supplier-specific emission factors where available. For missing suppliers, we apply industry-average factors and will transition to verified data by FY next.
+
+Recycled Content & Scrap Recovery
+Our target is 50% recycled aluminium input by 2026. Current recycled content is 32%. Scrap recovery rate at our Tier-1 partners averages 71%; we aim to reach 85% with closed-loop arrangements.
+
+Low-Carbon Aluminium Procurement
+We prioritize smelters with renewable electricity and require EPDs or equivalent verification. We will pilot 20% low-carbon aluminium in Vehicle Program A.
+
+Design for Circularity
+Engineering teams will reduce aluminium mass by 8% through topology optimization and standardize fasteners to improve separation at end-of-life.
+
+Supplier Data Verification
+We request annual third-party assurance for supplier emission factors and will expand chain-of-custody coverage across priority suppliers.
+

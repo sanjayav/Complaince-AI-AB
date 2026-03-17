@@ -1,0 +1,128 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-config
+  namespace: monitoring
+data:
+  prometheus.yml: |
+    global:
+      scrape_interval: 15s
+      evaluation_interval: 15s
+    
+    rule_files:
+      - /etc/prometheus/rules/*.yaml
+    
+    scrape_configs:
+      - job_name: 'kubernetes-pods'
+        kubernetes_sd_configs:
+          - role: pod
+        relabel_configs:
+          - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
+            action: keep
+            regex: true
+          - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_path]
+            action: replace
+            target_label: __metrics_path__
+            regex: (.+)
+          - source_labels: [__address__, __meta_kubernetes_pod_annotation_prometheus_io_port]
+            action: replace
+            regex: ([^:]+)(?::\d+)?;(\d+)
+            replacement: $1:$2
+            target_label: __address__
+          - action: labelmap
+            regex: __meta_kubernetes_pod_label_(.+)
+          - source_labels: [__meta_kubernetes_namespace]
+            action: replace
+            target_label: kubernetes_namespace
+          - source_labels: [__meta_kubernetes_pod_name]
+            action: replace
+            target_label: kubernetes_pod_name
+      
+      - job_name: 'jlrdi-api'
+        static_configs:
+          - targets: ['jlrdi-api-service:80']
+        metrics_path: /v1/metrics
+        scrape_interval: 10s
+      
+      - job_name: 'jlrdi-qdrant'
+        static_configs:
+          - targets: ['jlrdi-qdrant:6333']
+        metrics_path: /metrics
+        scrape_interval: 30s
+      
+      - job_name: 'postgres'
+        static_configs:
+          - targets: ['jlrdi-postgres:5432']
+        metrics_path: /metrics
+        scrape_interval: 60s
+      
+      - job_name: 'redis'
+        static_configs:
+          - targets: ['jlrdi-redis:6379']
+        metrics_path: /metrics
+        scrape_interval: 30s
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-rules
+  namespace: monitoring
+data:
+  jlrdi-rules.yaml: |
+    groups:
+      - name: jlrdi.rules
+        rules:
+          - alert: HighErrorRate
+            expr: rate(http_requests_total{status=~"5.."}[5m]) > 0.1
+            for: 2m
+            labels:
+              severity: warning
+            annotations:
+              summary: "High error rate detected"
+              description: "Error rate is {{ $value }} errors per second"
+          
+          - alert: HighResponseTime
+            expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > 0.5
+            for: 2m
+            labels:
+              severity: warning
+            annotations:
+              summary: "High response time detected"
+              description: "95th percentile response time is {{ $value }} seconds"
+          
+          - alert: PDFProcessingQueueFull
+            expr: jlrdi_pdf_processing_queue_size > 100
+            for: 1m
+            labels:
+              severity: critical
+            annotations:
+              summary: "PDF processing queue is full"
+              description: "Queue size is {{ $value }} documents"
+          
+          - alert: DatabaseConnectionHigh
+            expr: pg_stat_database_numbackends > 80
+            for: 2m
+            labels:
+              severity: warning
+            annotations:
+              summary: "High database connections"
+              description: "Database has {{ $value }} active connections"
+          
+          - alert: QdrantUnhealthy
+            expr: up{job="jlrdi-qdrant"} == 0
+            for: 1m
+            labels:
+              severity: critical
+            annotations:
+              summary: "Qdrant is down"
+              description: "Qdrant vector database is not responding"
+          
+          - alert: WorkerPoolOverloaded
+            expr: jlrdi_worker_pool_active_workers / jlrdi_worker_pool_total_workers < 0.5
+            for: 2m
+            labels:
+              severity: warning
+            annotations:
+              summary: "Worker pool is overloaded"
+              description: "Only {{ $value | humanizePercentage }} of workers are active"

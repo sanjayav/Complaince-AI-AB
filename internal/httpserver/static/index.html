@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JLR Document Intelligence - Automotive Test Reports</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
+    <style>
+        .pdf-container {
+            height: 80vh;
+            overflow: auto;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+        }
+        .search-highlight {
+            background-color: #fef3c7;
+            padding: 2px 4px;
+            border-radius: 4px;
+        }
+        .table-cell {
+            border: 1px solid #e5e7eb;
+            padding: 8px;
+            text-align: left;
+        }
+        .figure-container {
+            border: 2px solid #3b82f6;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 16px 0;
+            background-color: #f8fafc;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-blue-600 text-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center">
+                    <i class="fas fa-car text-2xl mr-3"></i>
+                    <h1 class="text-xl font-bold">JLR Document Intelligence</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span class="text-sm">Automotive Test Reports</span>
+                    <button id="uploadBtn" class="bg-blue-700 hover:bg-blue-800 px-4 py-2 rounded-lg transition-colors">
+                        <i class="fas fa-upload mr-2"></i>Upload Document
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Search Section -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">Search Automotive Test Reports</h2>
+            <div class="flex space-x-4">
+                <div class="flex-1">
+                    <input type="text" id="searchQuery" placeholder="Search for engine performance, fuel economy, safety ratings..." 
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                </div>
+                <button id="searchBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-colors">
+                    <i class="fas fa-search mr-2"></i>Search
+                </button>
+            </div>
+            
+            <!-- Search Options -->
+            <div class="mt-4 flex items-center space-x-6">
+                <div class="flex items-center space-x-2">
+                    <label class="text-sm font-medium text-gray-700">Type:</label>
+                    <select id="searchType" class="border border-gray-300 rounded-md px-3 py-1 text-sm">
+                        <option value="">All Types</option>
+                        <option value="cell">Table Cells</option>
+                        <option value="figure">Figures</option>
+                        <option value="chunk">Text Chunks</option>
+                    </select>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <label class="text-sm font-medium text-gray-700">Results:</label>
+                    <select id="searchLimit" class="border border-gray-300 rounded-md px-3 py-1 text-sm">
+                        <option value="5">5</option>
+                        <option value="10" selected>10</option>
+                        <option value="20">20</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div id="searchResults" class="bg-white rounded-lg shadow-md p-6 mb-8 hidden">
+            <h3 class="text-xl font-bold text-gray-800 mb-4">Search Results</h3>
+            <div id="resultsList" class="space-y-4"></div>
+        </div>
+
+        <!-- Document Viewer -->
+        <div id="documentViewer" class="bg-white rounded-lg shadow-md p-6 hidden">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold text-gray-800">Document Viewer</h3>
+                <button id="closeViewer" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- PDF Viewer -->
+                <div class="lg:col-span-2">
+                    <div class="pdf-container" id="pdfViewer">
+                        <div class="flex items-center justify-center h-full text-gray-500">
+                            <div class="text-center">
+                                <i class="fas fa-file-pdf text-4xl mb-2"></i>
+                                <p>PDF will load here</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Document Info -->
+                <div class="space-y-4">
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <h4 class="font-semibold text-gray-800 mb-2">Document Information</h4>
+                        <div id="docInfo" class="text-sm text-gray-600 space-y-1"></div>
+                    </div>
+                    
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <h4 class="font-semibold text-gray-800 mb-2">Extracted Tables</h4>
+                        <div id="extractedTables" class="text-sm text-gray-600"></div>
+                    </div>
+                    
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <h4 class="font-semibold text-gray-800 mb-2">Figures & Images</h4>
+                        <div id="extractedFigures" class="text-sm text-gray-600"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Upload Modal -->
+        <div id="uploadModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+            <div class="flex items-center justify-center min-h-screen p-4">
+                <div class="bg-white rounded-lg shadow-xl max-w-md w-full">
+                    <div class="flex justify-between items-center p-6 border-b">
+                        <h3 class="text-lg font-semibold text-gray-800">Upload Document</h3>
+                        <button id="closeUploadModal" class="text-gray-500 hover:text-gray-700">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="p-6">
+                        <form id="uploadForm" class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Document Type</label>
+                                <select id="docType" class="w-full border border-gray-300 rounded-lg px-3 py-2">
+                                    <option value="automotive_test">Automotive Test Report</option>
+                                    <option value="safety_critical">Safety Critical</option>
+                                    <option value="regulatory">Regulatory</option>
+                                    <option value="research">Research</option>
+                                </select>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">PDF File</label>
+                                <input type="file" id="pdfFile" accept=".pdf" required
+                                       class="w-full border border-gray-300 rounded-lg px-3 py-2">
+                            </div>
+                            
+                            <div class="flex justify-end space-x-3">
+                                <button type="button" id="cancelUpload" class="px-4 py-2 text-gray-600 hover:text-gray-800">
+                                    Cancel
+                                </button>
+                                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">
+                                    Upload
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let currentDocument = null;
+        let searchResults = [];
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeEventListeners();
+            setupPDFJS();
+        });
+
+        function initializeEventListeners() {
+            // Search functionality
+            document.getElementById('searchBtn').addEventListener('click', performSearch);
+            document.getElementById('searchQuery').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') performSearch();
+            });
+
+            // Upload functionality
+            document.getElementById('uploadBtn').addEventListener('click', showUploadModal);
+            document.getElementById('closeUploadModal').addEventListener('click', hideUploadModal);
+            document.getElementById('cancelUpload').addEventListener('click', hideUploadModal);
+            document.getElementById('uploadForm').addEventListener('submit', handleUpload);
+
+            // Document viewer
+            document.getElementById('closeViewer').addEventListener('click', hideDocumentViewer);
+        }
+
+        function setupPDFJS() {
+            // Set worker path for PDF.js
+            pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
+        }
+
+        async function performSearch() {
+            const query = document.getElementById('searchQuery').value.trim();
+            const type = document.getElementById('searchType').value;
+            const limit = parseInt(document.getElementById('searchLimit').value);
+
+            if (!query) {
+                alert('Please enter a search query');
+                return;
+            }
+
+            try {
+                const response = await fetch('/v1/search/semantic', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        query: query,
+                        top_k: limit,
+                        type: type || undefined
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                searchResults = data.results;
+                displaySearchResults(data);
+                
+            } catch (error) {
+                console.error('Search failed:', error);
+                alert('Search failed. Please try again.');
+            }
+        }
+
+        function displaySearchResults(data) {
+            const resultsSection = document.getElementById('searchResults');
+            const resultsList = document.getElementById('resultsList');
+            
+            resultsSection.classList.remove('hidden');
+            resultsList.innerHTML = '';
+
+            if (data.results.length === 0) {
+                resultsList.innerHTML = '<p class="text-gray-500 text-center py-8">No results found</p>';
+                return;
+            }
+
+            data.results.forEach((result, index) => {
+                const resultCard = createResultCard(result, index);
+                resultsList.appendChild(resultCard);
+            });
+        }
+
+        function createResultCard(result, index) {
+            const card = document.createElement('div');
+            card.className = 'border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer';
+            card.onclick = () => viewDocument(result);
+
+            const score = (result.score * 100).toFixed(1);
+            const typeIcon = getTypeIcon(result.type);
+            
+            card.innerHTML = `
+                <div class="flex justify-between items-start mb-2">
+                    <div class="flex items-center space-x-2">
+                        ${typeIcon}
+                        <span class="text-sm font-medium text-gray-600">${result.type.toUpperCase()}</span>
+                    </div>
+                    <span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">${score}% match</span>
+                </div>
+                <h4 class="font-semibold text-gray-800 mb-2">Document: ${result.doc_id}</h4>
+                <p class="text-sm text-gray-600 mb-2">Page ${result.page}</p>
+                <p class="text-gray-700">${result.content}</p>
+                <div class="mt-3 text-xs text-gray-500">
+                    <span class="bg-gray-100 px-2 py-1 rounded">X: ${result.bbox.x.toFixed(1)}</span>
+                    <span class="bg-gray-100 px-2 py-1 rounded ml-2">Y: ${result.bbox.y.toFixed(1)}</span>
+                    <span class="bg-gray-100 px-2 py-1 rounded ml-2">W: ${result.bbox.w.toFixed(1)}</span>
+                    <span class="bg-gray-100 px-2 py-1 rounded ml-2">H: ${result.bbox.h.toFixed(1)}</span>
+                </div>
+            `;
+
+            return card;
+        }
+
+        function getTypeIcon(type) {
+            const icons = {
+                'cell': '<i class="fas fa-table text-blue-500"></i>',
+                'figure': '<i class="fas fa-image text-green-500"></i>',
+                'chunk': '<i class="fas fa-file-alt text-purple-500"></i>'
+            };
+            return icons[type] || '<i class="fas fa-file text-gray-500"></i>';
+        }
+
+        async function viewDocument(result) {
+            try {
+                // Get document manifest
+                const response = await fetch(`/v1/documents/${result.doc_id}/manifest`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const manifest = await response.json();
+                currentDocument = manifest;
+                
+                // Show document viewer
+                showDocumentViewer();
+                
+                // Load PDF
+                await loadPDF(manifest.pdf_url);
+                
+                // Display document info
+                displayDocumentInfo(manifest);
+                
+                // Highlight the specific result
+                highlightResult(result);
+                
+            } catch (error) {
+                console.error('Failed to load document:', error);
+                alert('Failed to load document. Please try again.');
+            }
+        }
+
+        async function loadPDF(pdfUrl) {
+            try {
+                const loadingTask = pdfjsLib.getDocument(pdfUrl);
+                const pdf = await loadingTask.promise;
+                
+                const pdfViewer = document.getElementById('pdfViewer');
+                pdfViewer.innerHTML = '';
+
+                // Load first page as example
+                const page = await pdf.getPage(1);
+                const viewport = page.getViewport({ scale: 1.5 });
+                
+                const canvas = document.createElement('canvas');
+                const context = canvas.getContext('2d');
+                canvas.height = viewport.height;
+                canvas.width = viewport.width;
+                
+                const renderContext = {
+                    canvasContext: context,
+                    viewport: viewport
+                };
+                
+                await page.render(renderContext);
+                pdfViewer.appendChild(canvas);
+                
+            } catch (error) {
+                console.error('Failed to load PDF:', error);
+                document.getElementById('pdfViewer').innerHTML = `
+                    <div class="flex items-center justify-center h-full text-red-500">
+                        <div class="text-center">
+                            <i class="fas fa-exclamation-triangle text-4xl mb-2"></i>
+                            <p>Failed to load PDF</p>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        function displayDocumentInfo(manifest) {
+            document.getElementById('docInfo').innerHTML = `
+                <p><strong>Document ID:</strong> ${manifest.doc_id}</p>
+                <p><strong>Status:</strong> ${manifest.status}</p>
+                <p><strong>Pages:</strong> ${manifest.pages.length}</p>
+                <p><strong>PDF URL:</strong> <a href="${manifest.pdf_url}" target="_blank" class="text-blue-600 hover:underline">View PDF</a></p>
+            `;
+
+            // Display extracted tables
+            const tablesDiv = document.getElementById('extractedTables');
+            tablesDiv.innerHTML = '<p class="text-gray-500">Tables will be displayed here</p>';
+
+            // Display extracted figures
+            const figuresDiv = document.getElementById('extractedFigures');
+            figuresDiv.innerHTML = '<p class="text-gray-500">Figures will be displayed here</p>';
+        }
+
+        function highlightResult(result) {
+            // This would highlight the specific result in the PDF
+            // For now, just log the coordinates
+            console.log('Highlighting result at:', result.bbox);
+        }
+
+        function showDocumentViewer() {
+            document.getElementById('documentViewer').classList.remove('hidden');
+        }
+
+        function hideDocumentViewer() {
+            document.getElementById('documentViewer').classList.add('hidden');
+            currentDocument = null;
+        }
+
+        function showUploadModal() {
+            document.getElementById('uploadModal').classList.remove('hidden');
+        }
+
+        function hideUploadModal() {
+            document.getElementById('uploadModal').classList.add('hidden');
+            document.getElementById('uploadForm').reset();
+        }
+
+        async function handleUpload(event) {
+            event.preventDefault();
+            
+            const formData = new FormData();
+            const fileInput = document.getElementById('pdfFile');
+            const docType = document.getElementById('docType').value;
+            
+            if (!fileInput.files[0]) {
+                alert('Please select a PDF file');
+                return;
+            }
+            
+            formData.append('document', fileInput.files[0]);
+            formData.append('type', docType);
+            
+            try {
+                const response = await fetch('/v1/documents/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const result = await response.json();
+                alert(`Document uploaded successfully! ID: ${result.document_id}`);
+                hideUploadModal();
+                
+                // Optionally refresh search results
+                if (searchResults.length > 0) {
+                    performSearch();
+                }
+                
+            } catch (error) {
+                console.error('Upload failed:', error);
+                alert('Upload failed. Please try again.');
+            }
+        }
+    </script>
+</body>
+</html>
